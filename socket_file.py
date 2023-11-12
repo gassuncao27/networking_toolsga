@@ -4,8 +4,11 @@ form_protocol = input("What form do you to send yout packet: ")
 
 if form_protocol=='TCP':
 
-    target_host = "www.google.com"
-    target_port = 80
+    # target_host = "www.google.com"
+    # target_port = 80
+
+    target_host = "127.0.0.1"
+    target_port = 9998
 
     # create a socket object
     client = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
@@ -14,7 +17,8 @@ if form_protocol=='TCP':
     client.connect((target_host, target_port))
 
     # send some data
-    client.send(b"GET / HTTP/1.1\r\nHost: google.com\r\n\r\n")
+    # client.send(b"GET / HTTP/1.1\r\nHost: google.com\r\n\r\n")
+    client.send(b"Hello Server!")
 
     # receive some data
     response = client.recv(4096)
@@ -23,10 +27,29 @@ if form_protocol=='TCP':
 
 if form_protocol=='UDP':
 
-    target_host = "127.0.0.1"
-    target_port = 9997
-    client = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
-    client.sendto(b"AAABBBCCC", (target_host, target_port))
-    data, addr = client.recvfrom(4096)
-    print(data.decode())
-    client.close
+    target_host = '127.0.0.1'
+    target_port = 20001
+
+    msgFromServer = "Hello UDP Client"
+    bytesToSend = str.encode(msgFromServer)
+
+    UDPServerScoket = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
+    UDPServerScoket.bind((target_host, target_port))
+
+    print("UDP up and listening")
+
+    bytesAddressPair = UDPServerScoket.recvfrom(1024)
+    message = bytesAddressPair[0]
+    address = bytesAddressPair[1]
+
+    UDPServerScoket.sendto(bytesToSend, address)
+    print(message, address)
+    UDPServerScoket.close()
+
+    # target_host = "127.0.0.1"
+    # target_port = 9997
+    # client = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
+    # client.sendto(b"AAABBBCCC", (target_host, target_port))
+    # data, addr = client.recvfrom(4096)
+    # print(data.decode())
+    # client.close
